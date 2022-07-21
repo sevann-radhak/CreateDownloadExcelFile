@@ -26,40 +26,38 @@ namespace CreateDownloadExcelFile.Api.Controllers
         [HttpGet(Name = "CreateAndDownloadFile")]
         public IActionResult CreateAndDownloadFile()
         {
-            using (XLWorkbook? workbook = new())
-            {
-                IXLWorksheet? worksheet = workbook.Worksheets.Add("Students");
-                int currentRow = 1;
+            using XLWorkbook? workbook = new();
+            IXLWorksheet? worksheet = workbook.Worksheets.Add("Students");
+            int currentRow = 1;
 
-                #region Header
-                worksheet.Cell(currentRow, 1).Value = "StudentId";
-                worksheet.Cell(currentRow, 2).Value = "Name";
-                worksheet.Cell(currentRow, 3).Value = "Roll";
-                #endregion
+            #region Header
+            worksheet.Cell(currentRow, 1).Value = "StudentId";
+            worksheet.Cell(currentRow, 2).Value = "Name";
+            worksheet.Cell(currentRow, 3).Value = "Roll";
+            #endregion
 
-                #region Body
-                _ = _students
-                    .Select(s =>
-                    {
-                        currentRow++;
-                        worksheet.Cell(currentRow, 1).Value = s.Id;
-                        worksheet.Cell(currentRow, 2).Value = s.Name;
-                        worksheet.Cell(currentRow, 3).Value = s.Roll;
+            #region Body
+            _ = _students
+                .Select(s =>
+                {
+                    currentRow++;
+                    worksheet.Cell(currentRow, 1).Value = s.Id;
+                    worksheet.Cell(currentRow, 2).Value = s.Name;
+                    worksheet.Cell(currentRow, 3).Value = s.Roll;
 
-                        return s;
-                    })
-                    .ToList();
-                #endregion
+                    return s;
+                })
+                .ToList();
+            #endregion
 
-                using MemoryStream? stream = new();
-                workbook.SaveAs(stream);
-                byte[]? content = stream.ToArray();
+            using MemoryStream? stream = new();
+            workbook.SaveAs(stream);
+            byte[]? content = stream.ToArray();
 
-                return File(
-                    content,
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    $"Students {DateTime.UtcNow}.xlsx");
-            }
+            return File(
+                content,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"Students {DateTime.UtcNow}.xlsx");
         }
     }
 }
